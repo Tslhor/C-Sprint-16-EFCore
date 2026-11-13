@@ -1,0 +1,32 @@
+﻿@model Customer
+
+@{
+    ViewData["Title"] = "Delete Customer";
+}
+
+<h1 class="mb-3">Delete Customer</h1>
+
+<section aria-labelledby="customer-heading">
+    <h2 id="customer-heading" class="h5">Customer</h2>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-8 col-lg-6">
+            <p class="alert alert-warning">Are you sure you want to delete this customer?</p>
+
+            <partial name="_CustomerDetails" model="Model" />
+
+            <form asp-controller="Customers" asp-action="Delete" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                <input asp-for="Id" type="hidden" />
+
+                <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                    <a asp-controller="Customers" asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+
