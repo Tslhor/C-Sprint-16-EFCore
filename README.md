@@ -1,5 +1,18 @@
 # C-OnlineMarathon-Sprint16
 C# Online Marathon Sprint 16. EFC
+
+## Work plan and progress
+
+Use the [shared work plan](WORK_PLAN.md) to track tasks, owners, and completion:
+
+- [Petro's tasks](WORK_PLAN.md#petro-implementation): Customers, Supermarkets, Order views, layout, and navigation.
+- [Ihor's tasks](WORK_PLAN.md#ihor-implementation): Products, the Order backend, and database setup.
+- [Shared integration checklist](WORK_PLAN.md#integration-and-completion).
+
+After a task is completed and merged, change its checkbox from `- [ ]` to `- [x]` in WORK_PLAN.md, then commit and push the update. Keep task status in that file so there is one checklist to maintain.
+
+## Assignment
+
 Your task is to create a Shopping system (registration of orders).
 The system have to provide the storage of information about the date of the order, the store (supermarket), the list of ordered products and their quantity.
 The customer would have the ability to select a store to purchase products, select the items from the list (with a view of the price) and specify the quantity of products.
