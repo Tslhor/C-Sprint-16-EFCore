@@ -1,0 +1,54 @@
+﻿@model Customer
+
+@{
+    ViewData[index: "Title"] = "Create Customer";
+}
+
+<h1 class="mb-3">Create Customer</h1>
+
+<section aria-labelledby="customer-heading">
+    <h2 id="customer-heading" class="h5">Customer</h2>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-8 col-lg-6">
+            <form asp-controller="Customers" asp-action="Create" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="LastName" class="form-label"></label>
+                    <input asp-for="LastName" class="form-control" />
+                    <span asp-validation-for="LastName" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="FirstName" class="form-label"></label>
+                    <input asp-for="FirstName" class="form-control" />
+                    <span asp-validation-for="FirstName" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Address" class="form-label"></label>
+                    <input asp-for="Address" class="form-control" />
+                    <span asp-validation-for="Address" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Discount" class="form-label"></label>
+                    <input asp-for="Discount" class="form-control" type="number" step="1" />
+                    <span asp-validation-for="Discount" class="text-danger small"></span>
+                </div>
+
+                <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+                    <button type="submit" class="btn btn-primary">Create</button>
+                    <a asp-controller="Customers" asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
