@@ -1,0 +1,44 @@
+﻿@model Product
+
+@{
+    ViewData["Title"] = "Edit Product";
+}
+
+<h1 class="mb-3">Edit Product</h1>
+
+<section aria-labelledby="customer-heading">
+    <h2 id="customer-heading" class="h5">Product</h2>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-8 col-lg-6">
+            <form asp-controller="Products" asp-action="Edit" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                <input asp-for="Id" type="hidden" />
+
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label"></label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Price" class="form-label"></label>
+                    <input asp-for="Price" class="form-control" />
+                    <span asp-validation-for="Price" type="number" class="text-danger small"></span>
+                </div>
+
+                <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <a asp-controller="Products" asp-action="Index" class="btn btn-outline-secondary">Back to
+                        List</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    @section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+    }
+

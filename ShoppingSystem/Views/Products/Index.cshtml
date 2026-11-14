@@ -1,0 +1,56 @@
+﻿@model IEnumerable<Product>
+
+@{
+    ViewData["Title"] = "Products";
+}
+
+<h1 class="mb-3">Products</h1>
+
+<p class="mb-4">
+    <a asp-controller="Products" asp-action="Create" class="btn btn-primary">Create New</a>
+</p>
+
+<div class="table-responsive">
+    <table class="table table-hover align-middle">
+        <caption class="visually-hidden">Products and available actions</caption>
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Price</th>
+                <th scope="col"><span class="visually-hidden">Actions</span></th>
+            </tr>
+        </thead>
+        <tbody>
+
+            @foreach (var Product in Model)
+            {
+                <tr>
+                    <td class="text-break">@Product.Name</td>
+                    <td class="text-break">@Product.Price</td>
+                    <td class="text-nowrap text-end">
+                        <a asp-controller="Products" asp-action="Edit" asp-route-id="@Product.Id">Edit</a>
+                        |
+                        <a asp-controller="Products" asp-action="Details" asp-route-id="@Product.Id">Details</a> |
+                        <a asp-controller="Products" asp-action="Delete" asp-route-id="@Product.Id"
+                           class="text-danger">Delete</a>
+                    </td>
+                </tr>
+            }
+
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="3" class="text-center text-body-secondary py-4">
+                        No Products data loaded.
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<nav class="d-flex gap-2 mt-3" aria-label="Product pages">
+    @* Enable these controls when the controller provides pagination data. *@
+    <button type="button" class="btn btn-outline-secondary" disabled>Previous</button>
+    <button type="button" class="btn btn-outline-secondary" disabled>Next</button>
+</nav>
