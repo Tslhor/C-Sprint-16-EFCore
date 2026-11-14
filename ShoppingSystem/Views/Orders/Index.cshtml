@@ -1,0 +1,103 @@
+﻿@model ShoppingSystem.ViewModels.OrdersIndexViewModel
+
+@{
+    ViewData["Title"] = "Orders";
+    
+    decimal orderTotal = Model.SelectedOrder?.OrderDetails.Sum((item) => item.Product.Price * (decimal)item.Quantity) ?? 0;
+}
+
+<h1 class="mb-3">Orders</h1>
+
+<p class="mb-4">
+    <a asp-controller="Orders" asp-action="Create" class="btn btn-primary">Create New</a>
+</p>
+
+<div class="table-responsive">
+    <table class="table table-hover align-middle">
+        <caption class="visually-hidden">Orders with customer and supermarket names</caption>
+        <thead>
+            <tr>
+                <th scope="col">Order date</th>
+                <th scope="col">Customer</th>
+                <th scope="col">Supermarket</th>
+                <th scope="col"><span class="visually-hidden">Actions</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in Model.Orders)
+            {
+                <tr>
+                    <td>@order.OrderDate</td>
+                    <td>@order.Customer.FirstName @order.Customer.LastName</td>
+                    <td>@order.Supermarket.Name</td>
+                    <td class="text-nowrap text-end">
+                        <a asp-controller="Orders" asp-action="Edit" asp-route-id="@order.Id">Edit</a> |
+                        <a asp-controller="Orders" asp-action="Details" asp-route-id="@order.Id">Details</a> |
+                        <a asp-controller="Orders" asp-action="Delete" asp-route-id="@order.Id"
+                           class="text-danger">Delete</a>
+                    </td>
+                </tr>
+            }
+            
+            @if (!Model.Orders.Any())
+            {
+                <tr>
+                    <td colspan="4" class="text-center text-body-secondary py-4">
+                        No orders to display.
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@if (Model.SelectedOrder != null)
+{
+    <section class="mt-4">
+        <h2 class="mb-3">Order Details</h2>
+
+        <p>
+            <a asp-controller="OrderDetails" asp-action="Create" asp-route-orderId="@Model.SelectedOrder.Id"
+               class="btn btn-outline-primary">Add product</a>
+        </p>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th scope="col">Product</th>
+                        <th scope="col" class="text-end">Quantity</th>
+                        <th scope="col" class="text-end">Price</th>
+                        <th scope="col" class="text-end">Line total</th>
+                        <th scope="col">
+                            <span class="visually-hidden">Actions</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model.SelectedOrder.OrderDetails)
+                    {
+                        decimal lineTotal = (decimal)order.Quantity * order.Product.Price;
+                        <tr>
+                            <td>@order.Product.Name</td>
+                            <td class="text-end">@order.Quantity</td>
+                            <td class="text-end">@order.Product.Price</td>
+                            <td class="text-end">@lineTotal</td>
+                            <td class="text-nowrap text-end">
+                                <a asp-controller="OrderDetails" asp-action="Edit" asp-route-id="@order.Id">Edit</a> |
+                                <a asp-controller="OrderDetails" asp-action="Delete" asp-route-id="@order.Id">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="3" scope="row" class="text-end">Total</th>
+                        <td class="text-end fw-bold">@orderTotal</td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </section>
+}

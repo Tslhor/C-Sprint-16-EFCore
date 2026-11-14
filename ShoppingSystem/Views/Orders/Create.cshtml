@@ -1,0 +1,114 @@
+﻿@model ShoppingSystem.ViewModels.CreateOrderViewModel
+
+@{
+    ViewData["Title"] = "Create Order";
+}
+
+<h1 class="mb-3">Create Order</h1>
+
+<form action="/Orders/Create" method="post">
+    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+    <fieldset class="mb-4">
+        <legend class="h5">Order information</legend>
+        <hr />
+        <div class="row g-3">
+            <div class="col-md-6 col-lg-4">
+                <label for="customer-id" class="form-label">Customer</label>
+                <select id="customer-id" asp-for="CustomerId" class="form-select" required>
+                    <option value="">Select a customer</option>
+                    @foreach (var item in Model.Customers)
+                    {
+                        <option value="@item.Id">@item.FirstName @item.LastName</option>
+                    }
+                </select>
+                <span asp-validation-for="CustomerId" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <label for="supermarket-id" class="form-label">Supermarket</label>
+                <select id="supermarket-id" asp-for="SupermarketId" class="form-select" required>
+                    <option value="">Select a supermarket</option>
+                    @foreach (var item in Model.Supermarkets)
+                    {
+                        <option value="@item.Id">@item.Name</option>
+                    }
+                </select>
+                <span asp-validation-for="SupermarketId" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <label for="order-date" class="form-label">Order date</label>
+                <input id="order-date" asp-for="OrderDate" type="date" class="form-control" required />
+                <span asp-validation-for="OrderDate" class="text-danger small"></span>
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset class="mb-4">
+        <legend class="h5">Products</legend>
+        <hr />
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th scope="col">Product</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col" class="text-end">Price</th>
+                        <th scope="col" class="text-end">Line total</th>
+                        <th scope="col"><span class="visually-hidden">Actions</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <label for="product-0" class="visually-hidden">Product</label>
+                            <select id="product-0" asp-for="OrderDetails[0].ProductId" class="form-select" required>
+                                <option value="">Select a product</option>
+                                @foreach (var product in Model.Products)
+                                {
+                                    <option value="@product.Id">@product.Name</option>
+                                }
+                            </select>
+                            <span class="text-danger small field-validation-valid"
+                                  asp-validation-for="OrderDetails[0].ProductId"></span>
+                        </td>
+                        <td>
+                            <label for="quantity-0" class="visually-hidden">Quantity</label>
+                            <input id="quantity-0" asp-for="OrderDetails[0].Quantity" type="number" step="any"
+                                   class="form-control" required />
+                            <span class="text-danger small field-validation-valid"
+                                  asp-validation-for="OrderDetails[0].Quantity"></span>
+                        </td>
+                        <td class="text-end text-nowrap">
+                            <output id="price-0">&mdash;</output>
+                        </td>
+                        <td class="text-end text-nowrap">
+                            <output id="line-total-0">&mdash;</output>
+                        </td>
+                        <td class="text-end">
+                            <button type="button" class="btn btn-outline-danger btn-sm" disabled>Remove</button>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="3" scope="row" class="text-end">Total</th>
+                        <td class="text-end fw-bold text-nowrap">
+                            <output id="order-total">&mdash;</output>
+                        </td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        <button type="button" class="btn btn-outline-primary" disabled>Add another product</button>
+    </fieldset>
+
+    <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+        <button type="submit" class="btn btn-primary">Create</button>
+        <a href="/Orders" class="btn btn-outline-secondary">Back to List</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
