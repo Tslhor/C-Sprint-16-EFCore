@@ -12,9 +12,9 @@
 
 <form asp-controller="Customers" asp-action="Index" method="get" class="mb-4" role="search">
     <div class="d-flex flex-wrap align-items-center gap-2">
-        <label for="searchString" class="form-label mb-0">Find by name:</label>
+        <label for="searchText" class="form-label mb-0">Find by name:</label>
         <div class="col-12 col-sm-5 col-lg-3">
-            <input id="searchString" name="searchString" type="search" class="form-control" />
+            <input id="searchText" name="searchText" type="search" class="form-control" />
         </div>
         <button type="submit" class="btn btn-outline-primary">Search</button>
         <a asp-controller="Customers" asp-action="Index" class="ms-sm-2">Back to Full List</a>
@@ -51,7 +51,8 @@
                         <a asp-controller="Customers" asp-action="Edit" asp-route-id="@customer.Id">Edit</a>
                         |
                         <a asp-controller="Customers" asp-action="Details" asp-route-id="@customer.Id">Details</a> |
-                        <a asp-controller="Customers" asp-action="Delete" asp-route-id="@customer.Id" class="text-danger">Delete</a>
+                        <a asp-controller="Customers" asp-action="Delete" asp-route-id="@customer.Id"
+                           class="text-danger">Delete</a>
                     </td>
                 </tr>
             }

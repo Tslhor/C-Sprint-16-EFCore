@@ -22,8 +22,9 @@ namespace ShoppingSystem.Controllers
             customers.Add(customer);
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string? searchText)
         {
+            // ToDo: Implement search
             return View(customers);
         }
 
