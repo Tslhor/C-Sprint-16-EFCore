@@ -12,5 +12,6 @@ namespace ShoppingSystem.Models
 
         [Required(ErrorMessage = "Price is required.")]
         public decimal Price { get; set; }
+        public ICollection<OrderDetails> OrderDetails { get; set; } = new List<OrderDetails>();
     }
 }

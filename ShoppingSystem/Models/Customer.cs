@@ -19,7 +19,8 @@ namespace ShoppingSystem.Models
         [Required(ErrorMessage = "Address is required.")]
         [StringLength(50)]
         public string Address { get; set; } = string.Empty;
-        
+
         public int Discount { get; set; }
+        public ICollection<Order> Orders { get; set; } = new List<Order>();
     }
 }
