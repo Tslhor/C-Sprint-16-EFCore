@@ -1,0 +1,32 @@
+﻿@model Supermarket
+
+@{
+    ViewData["Title"] = "Delete Supermarket";
+}
+
+<h1 class="mb-3">Delete Supermarket</h1>
+
+<section aria-labelledby="customer-heading">
+    <h2 id="customer-heading" class="h5">Supermarket</h2>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-8 col-lg-6">
+            <p class="alert alert-warning">Are you sure you want to delete this supermarket?</p>
+
+            <partial name="_SupermarketDetails" model="Model" />
+
+            <form asp-controller="Supermarkets" asp-action="Delete" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                <input asp-for="Id" type="hidden" />
+
+                <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                    <a asp-controller="Supermarkets" asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+
