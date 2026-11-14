@@ -9,6 +9,6 @@ namespace ShoppingSystem.ViewModels
         public int ProductId { get; set; }
 
         [Required(ErrorMessage = "Quantity is required.")]
-        public float Quantity { get; set; }
+        public decimal Quantity { get; set; }
     }
 }
