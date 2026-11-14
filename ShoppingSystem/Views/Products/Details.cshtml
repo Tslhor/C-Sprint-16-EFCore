@@ -1,0 +1,24 @@
+﻿@model Product
+
+@{
+    ViewData["Title"] = "Product Details";
+}
+
+<h1 class="mb-3">Product Details</h1>
+
+<section aria-labelledby="customer-heading">
+    <h2 id="customer-heading" class="h5">Product</h2>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-8 col-lg-6">
+            <partial name="_ProductDetails" model="Model" />
+
+            <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+                <a asp-controller="Products" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+                <a asp-controller="Products" asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
+            </div>
+        </div>
+    </div>
+</section>
+
