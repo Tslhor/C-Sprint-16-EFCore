@@ -5,8 +5,8 @@ C# Online Marathon Sprint 16. EFC
 
 Use the [shared work plan](WORK_PLAN.md) to track tasks, owners, and completion:
 
-- [Petro's tasks](WORK_PLAN.md#petro-implementation): Customers, Supermarkets, Order views, layout, and navigation.
-- [Ihor's tasks](WORK_PLAN.md#ihor-implementation): Products, the Order backend, and database setup.
+- [Petro's tasks](WORK_PLAN.md#petro-implementation): all models and views, Customers and Supermarkets backend, layout, and navigation.
+- [Ihor's tasks](WORK_PLAN.md#ihor-implementation): Products and Orders backend, database setup, migrations, and seeding.
 - [Shared integration checklist](WORK_PLAN.md#integration-and-completion).
 
 After a task is completed and merged, change its checkbox from `- [ ]` to `- [x]` in WORK_PLAN.md, then commit and push the update. Keep task status in that file so there is one checklist to maintain.
