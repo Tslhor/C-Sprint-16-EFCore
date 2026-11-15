@@ -2,6 +2,28 @@
 
 @{
     ViewData["Title"] = "Customers";
+    var searchText = ViewData["SearchText"] as string;
+    var sortOrder = ViewData["SortOrder"] as string;
+    var lastNameSort = "lastName";
+    var addressSort = "address";
+
+    if (sortOrder == "lastName")
+    {
+        lastNameSort = "lastName_desc";
+    }
+    else if (sortOrder == "lastName_desc")
+    {
+        lastNameSort = "";
+    }
+
+    if (sortOrder == "address")
+    {
+        addressSort = "address_desc";
+    }
+    else if (sortOrder == "address_desc")
+    {
+        addressSort = "";
+    }
 }
 
 <h1 class="mb-3">Customers</h1>
@@ -11,10 +33,11 @@
 </p>
 
 <form asp-controller="Customers" asp-action="Index" method="get" class="mb-4" role="search">
+    <input type="hidden" name="sortOrder" value="@sortOrder" />
     <div class="d-flex flex-wrap align-items-center gap-2">
         <label for="searchText" class="form-label mb-0">Find by name:</label>
         <div class="col-12 col-sm-5 col-lg-3">
-            <input id="searchText" name="searchText" type="search" class="form-control" />
+            <input id="searchText" name="searchText" type="search" value="@searchText" class="form-control" />
         </div>
         <button type="submit" class="btn btn-outline-primary">Search</button>
         <a asp-controller="Customers" asp-action="Index" class="ms-sm-2">Back to Full List</a>
@@ -27,11 +50,13 @@
         <thead>
             <tr>
                 <th scope="col">
-                    <a asp-controller="Customers" asp-action="Index" asp-route-sortOrder="lastName">Last name</a>
+                    <a asp-controller="Customers" asp-action="Index" asp-route-sortOrder="@lastNameSort"
+                       asp-route-searchText="@searchText">Last name</a>
                 </th>
                 <th scope="col">First name</th>
                 <th scope="col">
-                    <a asp-controller="Customers" asp-action="Index" asp-route-sortOrder="address">Address</a>
+                    <a asp-controller="Customers" asp-action="Index" asp-route-sortOrder="@addressSort"
+                       asp-route-searchText="@searchText">Address</a>
                 </th>
                 <th scope="col">Discount</th>
                 <th scope="col"><span class="visually-hidden">Actions</span></th>
@@ -60,7 +85,7 @@
             {
                 <tr>
                     <td colspan="5" class="text-center text-body-secondary py-4">
-                        No customer data loaded.
+                        No customers found.
                     </td>
                 </tr>
             }

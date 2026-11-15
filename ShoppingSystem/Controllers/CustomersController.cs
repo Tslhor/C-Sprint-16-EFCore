@@ -1,114 +1,191 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using ShoppingSystem.Data;
 using ShoppingSystem.Models;
-using System.Diagnostics;
+using ShoppingSystem.ViewModels;
 
 namespace ShoppingSystem.Controllers
 {
     public class CustomersController : Controller
     {
-        private List<Customer> customers = new List<Customer>();
+        private readonly ShoppingDbContext _context;
 
-        public CustomersController()
+        public CustomersController(ShoppingDbContext context)
         {
-            Customer customer = new Customer
-            {
-                Id = 1,
-                FirstName = "Test",
-                LastName = "Test",
-                Address = "City",
-                Discount = 5
-            };
-
-            customers.Add(customer);
+            _context = context;
         }
 
-        public IActionResult Index(string? searchText)
+        public async Task<IActionResult> Index(string? searchText, string? sortOrder)
         {
-            // ToDo: Implement search
+            searchText = searchText?.Trim();
+            var query = _context.Customers.AsNoTracking();
+            query = ApplyFiltersAndSorting(query, searchText, sortOrder);
+
+            ViewData["SearchText"] = searchText;
+            ViewData["SortOrder"] = sortOrder;
+
+            var customers = await query.ToListAsync();
             return View(customers);
         }
 
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
-            Customer customer = customers[0];
+            var customer = await _context.Customers.AsNoTracking()
+                .FirstOrDefaultAsync(customer => customer.Id == id);
 
             if (customer == null)
             {
                 return NotFound();
             }
-            // ToDo: Add logic to find a customer from DB
-            return View(customers[0]);
+
+            return View(customer);
         }
 
         [HttpGet]
         public IActionResult Create()
         {
-            return View();
+            return View(new CustomerFormViewModel());
         }
 
         [HttpPost]
-        public IActionResult Create(Customer customer)
+        public async Task<IActionResult> Create(CustomerFormViewModel model)
         {
-            // Add logic to create a customer
-
             if (!ModelState.IsValid)
             {
-                return View(customer);
+                return View(model);
             }
+
+            var customer = new Customer
+            {
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                Address = model.Address,
+                Discount = model.Discount
+            };
+
+            _context.Customers.Add(customer);
+            await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            Customer customer = customers[0];
-
+            var customer = await _context.Customers.FindAsync(id);
 
             if (customer == null)
             {
                 return NotFound();
             }
-            // ToDo: Add logic to find a customer from DB
-            return View(customers[0]);
+
+            var model = new CustomerFormViewModel
+            {
+                FirstName = customer.FirstName,
+                LastName = customer.LastName,
+                Address = customer.Address,
+                Discount = customer.Discount
+            };
+
+            ViewData["CustomerId"] = id;
+            return View(model);
         }
 
         [HttpPost]
-        public IActionResult Edit(Customer customer)
+        public async Task<IActionResult> Edit([FromRoute] int id, CustomerFormViewModel model)
         {
-            // Add logic to edit a customer
-
-            if (!ModelState.IsValid)
-            {
-                return View(customer);
-            }
-
+            var customer = await _context.Customers.FindAsync(id);
             if (customer == null)
             {
                 return NotFound();
             }
+
+            ViewData["CustomerId"] = id;
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            customer.FirstName = model.FirstName;
+            customer.LastName = model.LastName;
+            customer.Address = model.Address;
+            customer.Discount = model.Discount;
+
+            await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            Customer customer = customers[0];
+            var customer = await _context.Customers.AsNoTracking()
+                .FirstOrDefaultAsync(customer => customer.Id == id);
 
             if (customer == null)
             {
                 return NotFound();
             }
-            // ToDo: Add logic to find a customer from DB
-            return View(customers[0]);
+
+            return View(customer);
         }
 
-        [HttpPost]
-        public IActionResult Delete(Customer customer)
+        [HttpPost, ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            // ToDo: Implement logic
+            var customer = await _context.Customers.FindAsync(id);
+            if (customer == null)
+            {
+                return NotFound();
+            }
+
+            if (await _context.Orders.AnyAsync(order => order.CustomerId == id))
+            {
+                ModelState.AddModelError(string.Empty, "Cannot delete a customer who has orders.");
+                return View("Delete", customer);
+            }
+
+            _context.Customers.Remove(customer);
+
+            await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
+        }
+
+        private IQueryable<Customer> ApplyFiltersAndSorting(
+            IQueryable<Customer> query, string? searchText, string? sortOrder)
+        {
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                query = query.Where(customer =>
+                    customer.FirstName.Contains(searchText) || customer.LastName.Contains(searchText));
+            }
+
+            switch (sortOrder)
+            {
+                case "lastName":
+                    query = query.OrderBy(customer => customer.LastName);
+                    break;
+
+                case "lastName_desc":
+                    query = query.OrderByDescending(customer => customer.LastName);
+                    break;
+
+                case "address":
+                    query = query.OrderBy(customer => customer.Address);
+                    break;
+
+                case "address_desc":
+                    query = query.OrderByDescending(customer => customer.Address);
+                    break;
+
+                default:
+                    query = query.OrderBy(customer => customer.Id);
+                    break;
+            }
+
+            return query;
         }
     }
 }
