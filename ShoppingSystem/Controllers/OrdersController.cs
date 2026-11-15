@@ -25,16 +25,98 @@ namespace ShoppingSystem.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(CreateOrderViewModel createOrder)
+        public IActionResult Create(
+            CreateOrderViewModel createOrder,
+            OrderFormCommand? command,
+            int? removeIndex)
         {
             PopulateCreateOptions(createOrder);
+
+            if (command == OrderFormCommand.AddItem)
+            {
+                AddItem(createOrder);
+                return View(createOrder);
+            }
+
+            if (command == OrderFormCommand.RemoveItem)
+            {
+                RemoveItem(createOrder, removeIndex);
+                return View(createOrder);
+            }
 
             if (!ModelState.IsValid)
             {
                 return View(createOrder);
             }
 
+            if (command == OrderFormCommand.Calculate)
+            {
+                CalculateTotals(createOrder);
+            }
+
             return View(createOrder);
+        }
+
+        private void AddItem(CreateOrderViewModel model)
+        {
+            model.OrderDetails.Add(new OrderItemViewModel());
+
+            ModelState.Clear();
+
+            CalculateTotals(model);
+        }
+
+        private void RemoveItem(CreateOrderViewModel model, int? removeIndex)
+        {
+            if (removeIndex.HasValue &&
+                removeIndex.Value >= 0 &&
+                removeIndex.Value < model.OrderDetails.Count &&
+                model.OrderDetails.Count > 1)
+            {
+                model.OrderDetails.RemoveAt(removeIndex.Value);
+            }
+
+            ModelState.Clear();
+
+            CalculateTotals(model);
+        }
+
+        private void CalculateTotals(CreateOrderViewModel model)
+        {
+            model.OrderTotal = null;
+
+            for (var index = 0; index < model.OrderDetails.Count; index++)
+            {
+                var item = model.OrderDetails[index];
+
+                if (item.ProductId == 0)
+                {
+                    continue;
+                }
+
+                var product = model.Products.FirstOrDefault((p) => p.Id == item.ProductId);
+
+                item.Price = null;
+                item.LineTotal = null;
+
+                if (product == null)
+                {
+                    ModelState.AddModelError(
+                        $"OrderDetails[{index}].ProductId",
+                        "Selected product was not found.");
+
+                    continue;
+                }
+
+                item.Price = product.Price;
+
+                item.LineTotal = item.Price * item.Quantity;
+            }
+
+            if (ModelState.IsValid)
+            {
+                model.OrderTotal = model.OrderDetails.Sum((o) => o.LineTotal);
+            }
         }
 
         private void PopulateCreateOptions(CreateOrderViewModel createOrder)

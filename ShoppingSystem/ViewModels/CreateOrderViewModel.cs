@@ -14,6 +14,7 @@ namespace ShoppingSystem.ViewModels
         [Display(Name = "Order Date")]
         [Required(ErrorMessage = "Order date is required.")]
         public DateTime? OrderDate { get; set; }
+        public decimal? OrderTotal { get; set; }
         public IEnumerable<Customer> Customers { get; set; } = new List<Customer>();
         public IEnumerable<Supermarket> Supermarkets { get; set; } = new List<Supermarket>();
         public IEnumerable<Product> Products { get; set; } = new List<Product>();

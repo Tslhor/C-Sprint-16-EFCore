@@ -6,7 +6,7 @@
 
 <h1 class="mb-3">Create Order</h1>
 
-<form action="/Orders/Create" method="post">
+<form asp-controller="Orders" asp-action="Create" method="post">
     <div asp-validation-summary="All" class="text-danger mb-3"></div>
 
     <fieldset class="mb-4">
@@ -58,53 +58,61 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @for (var index = 0; index < Model.OrderDetails.Count; index++)
+                    {
                     <tr>
                         <td>
-                            <label for="product-0" class="visually-hidden">Product</label>
-                            <select id="product-0" asp-for="OrderDetails[0].ProductId" class="form-select" required>
+                            <label for="product-@index" class="visually-hidden">Product</label>
+                            <select id="product-@index" asp-for="OrderDetails[index].ProductId" class="form-select" required>
                                 <option value="">Select a product</option>
                                 @foreach (var product in Model.Products)
                                 {
-                                    <option value="@product.Id">@product.Name</option>
+                                    <option value="@product.Id">@product.Name — @product.Price.ToString("F2")</option>
                                 }
                             </select>
                             <span class="text-danger small field-validation-valid"
-                                  asp-validation-for="OrderDetails[0].ProductId"></span>
+                                  asp-validation-for="OrderDetails[index].ProductId"></span>
                         </td>
                         <td>
-                            <label for="quantity-0" class="visually-hidden">Quantity</label>
-                            <input id="quantity-0" asp-for="OrderDetails[0].Quantity" type="number" step="any"
+                            <label for="quantity-@index" class="visually-hidden">Quantity</label>
+                            <input id="quantity-@index" asp-for="OrderDetails[index].Quantity" type="number" step="any"
                                    class="form-control" required />
                             <span class="text-danger small field-validation-valid"
-                                  asp-validation-for="OrderDetails[0].Quantity"></span>
+                                  asp-validation-for="OrderDetails[index].Quantity"></span>
                         </td>
                         <td class="text-end text-nowrap">
-                            <output id="price-0">&mdash;</output>
+                            <output id="price-@index">@(Model.OrderDetails[index].Price?.ToString("F2") ?? "—")</output>
                         </td>
                         <td class="text-end text-nowrap">
-                            <output id="line-total-0">&mdash;</output>
+                            <output id="line-total-@index">@(Model.OrderDetails[index].LineTotal?.ToString("F2") ?? "—")</output>
                         </td>
                         <td class="text-end">
-                            <button type="button" class="btn btn-outline-danger btn-sm" disabled>Remove</button>
+                            <button type="submit" name="command" value="RemoveItem"
+                                    asp-controller="Orders" asp-action="Create" asp-route-removeIndex="@index"
+                                    formnovalidate class="btn btn-outline-danger btn-sm"
+                                    disabled="@(Model.OrderDetails.Count <= 1)">Remove</button>
                         </td>
                     </tr>
+                    }
                 </tbody>
                 <tfoot>
                     <tr>
                         <th colspan="3" scope="row" class="text-end">Total</th>
                         <td class="text-end fw-bold text-nowrap">
-                            <output id="order-total">&mdash;</output>
+                            <output id="order-total">@(Model.OrderTotal?.ToString("F2") ?? "—")</output>
                         </td>
                         <td></td>
                     </tr>
                 </tfoot>
             </table>
         </div>
-        <button type="button" class="btn btn-outline-primary" disabled>Add another product</button>
+        <button type="submit" name="command" value="AddItem" formnovalidate
+                class="btn btn-outline-primary">Add another product</button>
     </fieldset>
 
     <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
-        <button type="submit" class="btn btn-primary">Create</button>
+        <button type="submit" name="command" value="Calculate" class="btn btn-outline-primary">Calculate</button>
+        <button type="submit" name="command" value="Create" class="btn btn-primary">Create</button>
         <a href="/Orders" class="btn btn-outline-secondary">Back to List</a>
     </div>
 </form>
