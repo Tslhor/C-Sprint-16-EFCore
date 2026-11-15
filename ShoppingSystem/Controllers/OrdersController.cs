@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using ShoppingSystem.Models;
+using Domain.Entities;
 using ShoppingSystem.ViewModels;
 
 namespace ShoppingSystem.Controllers
@@ -188,3 +188,4 @@ namespace ShoppingSystem.Controllers
         }
     }
 }
+

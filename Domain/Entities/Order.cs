@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace ShoppingSystem.Models
+namespace Domain.Entities
 {
     public class Order
     {

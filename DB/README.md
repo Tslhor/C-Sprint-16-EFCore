@@ -10,7 +10,7 @@ Database file:
 DB/shopping_system_local.db
 ```
 
-The initial schema is created automatically by the seeder before data is inserted.
+The schema is managed by EF Core migrations and applied automatically before data is inserted.
 
 ## Initialization and seeding
 
@@ -23,11 +23,12 @@ The initial schema is created automatically by the seeder before data is inserte
    - 10 customers with first names, last names, addresses, and discounts selected from the source data.
    - 15 products selected from the source data.
 
-Order seeding is currently disabled in `DatabaseSeeder.SeedIfEmptyAsync`. The separate `SeedOrdersAsync` method prepares 5 orders with 6 products per order, each with quantity `3`. It currently assumes customer and supermarket IDs 1–5 and product IDs 1–15; review those assumptions before enabling it for a database that has been reseeded.
+The seeder prepares 5 orders with 6 products per order, each with quantity `3`. It queries generated database keys rather than assuming sequential IDs.
 
 `Customers` contains `Id`, `FirstName`, `LastName`, `Address`, and `Discount`. `SuperMarkets` contains `Id`, `Name`, and `Address`. The seeder inserts these values using SQL parameters.
 
-The initialization scripts only prepare the storage directory. The application creates the tables and seeds the base data on startup. `CREATE TABLE IF NOT EXISTS` does not add columns to existing tables; use a migration or create a new test database after backing up the existing file. Controllers still use temporary data until database access is connected.
+The initialization scripts only prepare the storage directory. The application applies pending EF Core migrations and seeds data on startup. 
+Existing databases created by the legacy schema script should be backed up and recreated before first migration-based startup.
 
 ## Data rules
 
@@ -47,24 +48,19 @@ shopping_system_local.db
 
 ## Updating the database schema
 
-The application does not automatically migrate an existing SQLite file. Follow this process whenever `schema.sql` or the model schema changes:
+The application automatically applies pending EF Core migrations. Follow this process whenever the model schema changes:
 
 1. Stop the application.
 2. Make a backup copy of `shopping_system_local.db`.
-3. Update `schema.sql` to describe the desired schema.
-4. Create a separate SQL migration script in this folder.
-   - Use `ALTER TABLE` for additive changes.
-   - Include data-conversion statements when existing values must be transformed.
-5. Test the migration against a copy of the database using SQLite Viewer or the `sqlite3` command-line tool.
-6. Apply the migration to the working database.
-7. Verify the tables, columns, foreign keys, constraints, and data.
-8. Update the matching C# models and seeder logic.
-9. Build the application and verify that it starts successfully.
-10. Record the migration script in the project so other developers can reproduce the change. Do not edit an applied migration; create a new migration script instead.
+3. Update the C# models and `ShoppingDbContext` configuration.
+4. Run `dotnet ef migrations add <MigrationName> --project ShoppingSystem/ShoppingSystem.csproj`.
+5. Test the migration against a copy of the database.
+6. Build the application and verify that it starts successfully.
+7. Do not edit an applied migration; create a new migration instead.
 
 For destructive changes, or changes SQLite cannot apply directly:
 
-1. Create a new database from `schema.sql`.
+	1. Create a new database by deleting the local SQLite file and restarting the application.
 2. Copy the required data into the new database.
 3. Verify the new database.
 4. Replace the old database only after keeping the backup.
@@ -77,4 +73,4 @@ To create a clean local database:
 2. Back up or delete `shopping_system_local.db`.
 3. Start the application.
 
-The seeder will create the current tables from `schema.sql` and insert the sample data.
+The seeder will apply the current EF Core migrations and insert the sample data.

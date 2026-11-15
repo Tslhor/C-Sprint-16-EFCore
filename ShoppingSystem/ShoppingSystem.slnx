@@ -1,3 +1,6 @@
 <Solution>
   <Project Path="ShoppingSystem.csproj" />
+  <Project Path="..\Domain\Domain.csproj" />
+  <Project Path="..\Data\Data.csproj" />
+  <Project Path="..\DB_Seeder\DB_Seeder.csproj" />
 </Solution>

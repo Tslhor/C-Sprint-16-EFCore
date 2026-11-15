@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using ShoppingSystem.Data;
-using ShoppingSystem.Models;
+using Data;
+using Domain.Entities;
 using ShoppingSystem.ViewModels;
 
 namespace ShoppingSystem.Controllers
@@ -189,3 +189,4 @@ namespace ShoppingSystem.Controllers
         }
     }
 }
+

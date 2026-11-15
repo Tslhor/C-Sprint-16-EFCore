@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using ShoppingSystem.Models;
+using Domain.Entities;
 
 namespace ShoppingSystem.ViewModels
 {
