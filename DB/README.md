@@ -18,7 +18,7 @@ The schema is managed by EF Core migrations and applied automatically before dat
    - Windows PowerShell: run `init-db.ps1`.
    - macOS/Linux: run `./init-db.sh`.
 2. Start the application.
-3. The seeder reads data from `ShoppingSystem/DB_Seeder/DB_Seeder_Data` and inserts:
+3. The seeder reads data from `DB_Seeder/SeedData` and inserts:
    - 5 supermarkets with names and addresses selected from the source data.
    - 10 customers with first names, last names, addresses, and discounts selected from the source data.
    - 15 products selected from the source data.
