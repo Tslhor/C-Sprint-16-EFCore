@@ -44,6 +44,8 @@ namespace ShoppingSystem.Controllers
                 return View(createOrder);
             }
 
+            ValidateOrderForm(createOrder);
+
             if (!ModelState.IsValid)
             {
                 return View(createOrder);
@@ -152,6 +154,37 @@ namespace ShoppingSystem.Controllers
                     Price = 10
                 }
             };
+        }
+
+        private void ValidateOrderForm(CreateOrderViewModel model)
+        {
+            if (model.OrderDetails.Count == 0)
+            {
+                ModelState.AddModelError(
+                    nameof(model.OrderDetails),
+                    "Order list can not be empty.");
+            }
+
+            var productIds = new HashSet<int>();
+
+            for (var i = 0; i < model.OrderDetails.Count; i++)
+            {
+                OrderItemViewModel item = model.OrderDetails[i];
+
+                if (item.Quantity <= 0)
+                {
+                    ModelState.AddModelError(
+                        $"OrderDetails[{i}].Quantity",
+                        "Quantity must be greater than zero.");
+                }
+
+                if (item.ProductId > 0 && !productIds.Add(item.ProductId))
+                {
+                    ModelState.AddModelError(
+                        $"OrderDetails[{i}].ProductId",
+                        "This product is already added.");
+                }
+            }
         }
     }
 }
