@@ -19,13 +19,15 @@ The initial schema is created automatically by the seeder before data is inserte
    - macOS/Linux: run `./init-db.sh`.
 2. Start the application.
 3. The seeder reads data from `ShoppingSystem/DB_Seeder/DB_Seeder_Data` and inserts:
-   - 5 supermarkets selected from the source data.
-   - 10 customers selected from the source data.
+   - 5 supermarkets with names and addresses selected from the source data.
+   - 10 customers with first names, last names, addresses, and discounts selected from the source data.
    - 15 products selected from the source data.
-   - 5 orders assigned to different supermarkets.
-   - 6 products per order, each with quantity `3`.
 
-Order seeding runs as a separate step. Therefore, an existing database that already contains product data but has no orders can receive order data without reseeding the base data. Customers and supermarkets are referenced by ID because their tables contain only IDs.
+Order seeding is currently disabled in `DatabaseSeeder.SeedIfEmptyAsync`. The separate `SeedOrdersAsync` method prepares 5 orders with 6 products per order, each with quantity `3`. It currently assumes customer and supermarket IDs 1–5 and product IDs 1–15; review those assumptions before enabling it for a database that has been reseeded.
+
+`Customers` contains `Id`, `FirstName`, `LastName`, `Address`, and `Discount`. `SuperMarkets` contains `Id`, `Name`, and `Address`. The seeder inserts these values using SQL parameters.
+
+The initialization scripts only prepare the storage directory. The application creates the tables and seeds the base data on startup. `CREATE TABLE IF NOT EXISTS` does not add columns to existing tables; use a migration or create a new test database after backing up the existing file. Controllers still use temporary data until database access is connected.
 
 ## Data rules
 

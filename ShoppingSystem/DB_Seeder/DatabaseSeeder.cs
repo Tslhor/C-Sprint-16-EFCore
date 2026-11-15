@@ -64,14 +64,30 @@ public static class DatabaseSeeder
             await ExecuteAsync(connection, transaction, $"DELETE FROM {table};");
         }
 
-        foreach (var _ in customers.OrderBy(_ => Random.Shared.Next()).Take(10))
+        foreach (var customer in customers.OrderBy(_ => Random.Shared.Next()).Take(10))
         {
-            await InsertAsync(connection, transaction, "INSERT INTO Customers DEFAULT VALUES;");
+            const string sql = "INSERT INTO Customers (FirstName, LastName, Address, Discount) VALUES ($firstName, $lastName, $address, $discount);";
+            await InsertAsync(
+                connection,
+                transaction,
+                sql,
+                ("$firstName", customer.FirstName),
+                ("$lastName", customer.LastName),
+                ("$address", customer.Address),
+                ("$discount", customer.Discount)
+            );
         }
 
-        foreach (var _ in supermarkets.OrderBy(_ => Random.Shared.Next()).Take(5))
+        foreach (var supermarket in supermarkets.OrderBy(_ => Random.Shared.Next()).Take(5))
         {
-            await InsertAsync(connection, transaction, "INSERT INTO SuperMarkets DEFAULT VALUES;");
+            const string sql = "INSERT INTO SuperMarkets (Name, Address) VALUES ($name, $address);";
+            await InsertAsync(
+                connection,
+                transaction,
+                sql,
+                ("$name", supermarket.Name),
+                ("$address", supermarket.Address)
+            );
         }
 
         foreach (var product in products
