@@ -21,10 +21,10 @@ public static class DatabaseSeeder
             }
         }
 
-        //if (await IsOrderDataEmptyAsync(databasePath))
-        //{
-        //    await SeedOrdersAsync(databasePath);
-        //}
+        if (await IsOrderDataEmptyAsync(databasePath))
+        {
+            await SeedOrdersAsync(databasePath);
+        }
     }
 
     public static async Task SeedAsync(string databasePath, string seedDataPath)
@@ -64,9 +64,15 @@ public static class DatabaseSeeder
             await ExecuteAsync(connection, transaction, $"DELETE FROM {table};");
         }
 
-        foreach (var customer in customers.OrderBy(_ => Random.Shared.Next()).Take(10))
+        foreach (var customer in customers
+                     .OrderBy(_ => Random.Shared.Next())
+                     .Take(10))
         {
-            const string sql = "INSERT INTO Customers (FirstName, LastName, Address, Discount) VALUES ($firstName, $lastName, $address, $discount);";
+            const string sql = """
+                INSERT INTO Customers (FirstName, LastName, Address, Discount)
+                VALUES ($firstName, $lastName, $address, $discount);
+                """;
+
             await InsertAsync(
                 connection,
                 transaction,
@@ -74,27 +80,34 @@ public static class DatabaseSeeder
                 ("$firstName", customer.FirstName),
                 ("$lastName", customer.LastName),
                 ("$address", customer.Address),
-                ("$discount", customer.Discount)
-            );
+                ("$discount", customer.Discount));
         }
 
-        foreach (var supermarket in supermarkets.OrderBy(_ => Random.Shared.Next()).Take(5))
+        foreach (var supermarket in supermarkets
+                     .OrderBy(_ => Random.Shared.Next())
+                     .Take(5))
         {
-            const string sql = "INSERT INTO SuperMarkets (Name, Address) VALUES ($name, $address);";
+            const string sql = """
+                INSERT INTO SuperMarkets (Name, Address)
+                VALUES ($name, $address);
+                """;
+
             await InsertAsync(
                 connection,
                 transaction,
                 sql,
                 ("$name", supermarket.Name),
-                ("$address", supermarket.Address)
-            );
+                ("$address", supermarket.Address));
         }
 
         foreach (var product in products
                      .OrderBy(_ => Random.Shared.Next())
                      .Take(15))
         {
-            const string sql = "INSERT INTO Products (Name, Price) VALUES ($name, $price);";
+            const string sql = """
+                INSERT INTO Products (Name, Price)
+                VALUES ($name, $price);
+                """;
             var price = product.Price.ToString("0.00", CultureInfo.InvariantCulture);
 
             await InsertAsync(
@@ -302,7 +315,11 @@ public static class DatabaseSeeder
         string Address,
         int Discount);
 
-    private sealed record SupermarketSeed(string Name, string Address);
+    private sealed record SupermarketSeed(
+        string Name, 
+        string Address);
 
-    private sealed record ProductSeed(string Name, decimal Price);
+    private sealed record ProductSeed(
+        string Name, 
+        decimal Price);
 }
