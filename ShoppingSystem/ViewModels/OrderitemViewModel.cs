@@ -10,5 +10,8 @@ namespace ShoppingSystem.ViewModels
 
         [Required(ErrorMessage = "Quantity is required.")]
         public decimal Quantity { get; set; }
+
+        public decimal? Price { get; set; }
+        public decimal? LineTotal { get; set; }
     }
 }
