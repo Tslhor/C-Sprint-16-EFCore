@@ -20,7 +20,7 @@ Each owner implements and checks their area. Both developers review changes that
 
 All views use the Bootstrap 5 files already bundled with the MVC project and the shared layout. Use Bootstrap components and utilities for navigation, grids, cards, tables, forms, buttons, validation, and pagination. Add custom CSS only where Bootstrap does not cover the requirement.
 
-Petro will focus first on models and UI, currently the Create Order form. Customer filtering and sorting and supermarket pagination can also be developed against temporary collections when those tasks resume. Database queries and persistence will follow once ShoppingContext is available. Controllers may use clearly marked temporary data to preview views; these previews do not complete the database-backed CRUD requirements.
+Petro will focus first on models and UI, currently the Create Order form. Implement customer filtering and sorting and supermarket pagination directly against EF Core once ShoppingContext is available; do not build disposable temporary-collection implementations. Controllers may use clearly marked temporary data to preview views; these previews do not complete the database-backed CRUD requirements.
 
 ## Progress tracking
 
@@ -28,7 +28,9 @@ Use this file as the shared checklist linked from [README.md](README.md#work-pla
 
 Status reviewed against master on 2026-11-14, including merged PR #7 for the Orders page and Create form. Checked UI and controller skeleton tasks do not imply working database operations. Current controllers use temporary in-memory data; the Orders list is empty until data is supplied.
 
-Before migrations, review the implemented model choices together: Customer first and last names are limited to 30 characters and address to 50; Supermarket name is limited to 30 and address to 50; Product price uses decimal; OrderDetails quantity uses float. These choices need explicit SQL mappings where they differ from the assignment schema.
+Before migrations, review the implemented model choices together: Customer first and last names are limited to 30 characters and address to 50; Supermarket name is limited to 30 and address to 50; Product price and OrderDetails quantity use decimal. These choices need explicit SQL mappings where they differ from the assignment schema.
+
+Local work reviewed on 2026-11-15: Create Order calculations and Add/Remove controls are implemented and reported working in the browser. Customer and supermarket SQL fields and parameterized seed inserts are implemented; the user confirmed that the new database contains the data. These local results do not confirm merge status. EF Core integration and database-backed controller operations remain incomplete.
 
 ## Agree before implementation
 
@@ -87,7 +89,7 @@ Petro has created the MVC project. Petro can prepare the page layout while Ihor 
 Build these against the contracts agreed with Ihor. Final checks depend on his controllers and view data.
 
 - [x] Create Order with primary key, customer foreign key, supermarket foreign key, order date, reference navigations, and a collection of order details.
-- [x] Create OrderDetails with primary key, order foreign key, product foreign key, float quantity, and reference navigations.
+- [x] Create OrderDetails with primary key, order foreign key, product foreign key, decimal quantity, and reference navigations.
 - [x] Add collection navigations to Customer, Supermarket, and Product.
 - [ ] Review navigation properties and SQL mappings with Ihor before generating migrations.
 - [x] Create OrdersIndexViewModel with an Orders collection and nullable SelectedOrder.
@@ -98,15 +100,18 @@ Build these against the contracts agreed with Ihor. Final checks depend on his c
 - [x] Add basic form validation for positive customer/supermarket/product IDs and required order date, with validation message markup.
 - [x] Create the initial Create Order form with customer/supermarket/product dropdowns, date, and one bound quantity input.
 - [x] Implement GET Create with one empty position and sample dropdown data, a reusable PopulateCreateOptions method, and POST binding with ModelState validation and return of the submitted ViewModel.
-- [ ] Complete validation of at least one position and acceptable quantity; positive-quantity validation is deliberately deferred.
-- [ ] Display selected product prices and calculate line totals and the order total in the Create form; these outputs currently show placeholders. Calculate was deferred to a separate task.
-- [ ] Enable adding and removing product rows, preserve all rows on POST, and keep field names and IDs correctly indexed.
+- [ ] Complete server validation of at least one position, positive quantity, and unique product IDs, with errors attached to the appropriate fields.
+- [ ] Merge the implemented Create form prices, line totals, and order total calculations; browser behavior reported working.
+- [ ] Merge the implemented Add/Remove controls and indexed row binding; browser behavior reported working.
 - [ ] Add and validate the antiforgery token for the Create form POST.
+- [ ] Validate antiforgery tokens on Customer, Supermarket, and Product Create/Edit/Delete POST actions; the existing forms use Form Tag Helpers.
 - [ ] Verify selected values, quantity, date, validation errors, and dropdown choices survive a round trip in the browser.
 - [ ] Create views or controls to edit and delete orders and to add, edit, and remove order details.
 - [x] Bind readable customer, supermarket, and product names in the Create dropdowns, with IDs as submitted values.
 - [ ] Complete readable relationship selection and validation feedback in the remaining order and order-detail forms.
 - [ ] Connect order views to the agreed actions and check links, submissions, and validation with Ihor.
+- [ ] Agree with Ihor on routes, action signatures, and ViewModels for order and order-detail editing/deletion before implementing the remaining UI.
+- [ ] Check navigation, validation messages, empty states, and narrow-screen layouts across the prepared views.
 
 ## Ihor implementation
 
