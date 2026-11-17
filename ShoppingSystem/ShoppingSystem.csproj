@@ -7,6 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+	<Content Update="wwwroot\**\*">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\Data\Data.csproj" />
     <ProjectReference Include="..\DB_Seeder\DB_Seeder.csproj" />
