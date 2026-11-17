@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Data;
 using Domain.Entities;
+using ShoppingSystem.Extensions;
 using ShoppingSystem.ViewModels;
 
 namespace ShoppingSystem.Controllers
@@ -15,11 +16,13 @@ namespace ShoppingSystem.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int pageNumber = 1)
         {
-            var supermarkets = await _context.Supermarkets.AsNoTracking()
-                .OrderBy(supermarket => supermarket.Id).ToListAsync();
-            return View(supermarkets);
+            var model = await _context.Supermarkets.AsNoTracking()
+                .OrderBy(supermarket => supermarket.Id)
+                .ToPagedListAsync(pageNumber, 5);
+
+            return View(model);
         }
 
         public async Task<IActionResult> Details(int id)

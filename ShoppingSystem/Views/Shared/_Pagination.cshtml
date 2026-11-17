@@ -1,0 +1,25 @@
+@model ShoppingSystem.ViewModels.PaginationViewModel
+
+<nav class="d-flex flex-wrap align-items-center gap-2 mt-3">
+    @if (Model.HasPreviousPage)
+    {
+        <a asp-action="Index" asp-route-pageNumber="@(Model.PageNumber - 1)"
+           class="btn btn-outline-secondary">Previous</a>
+    }
+    else
+    {
+        <button type="button" class="btn btn-outline-secondary" disabled>Previous</button>
+    }
+
+    <span>Page @Model.PageNumber of @Model.TotalPages</span>
+
+    @if (Model.HasNextPage)
+    {
+        <a asp-action="Index" asp-route-pageNumber="@(Model.PageNumber + 1)"
+           class="btn btn-outline-secondary">Next</a>
+    }
+    else
+    {
+        <button type="button" class="btn btn-outline-secondary" disabled>Next</button>
+    }
+</nav>
