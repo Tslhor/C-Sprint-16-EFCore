@@ -1,50 +1,68 @@
 using Microsoft.AspNetCore.Mvc;
-using Domain.Entities;
+using ShoppingSystem.Services;
 using ShoppingSystem.ViewModels;
 
 namespace ShoppingSystem.Controllers
 {
     public class OrdersController : Controller
     {
-        public IActionResult Index()
+        private readonly IOrderService _orderService;
+        private readonly IOrderFormService _orderFormService;
+
+        public OrdersController(IOrderService orderService, IOrderFormService orderFormService)
         {
-            var orders = new OrdersIndexViewModel();
-            return View(orders);
+            _orderService = orderService;
+            _orderFormService = orderFormService;
+        }
+
+        public async Task<IActionResult> Index(int? id)
+        {
+            var model = await _orderService.BuildIndexViewModelAsync(id);
+            return View(model);
+        }
+
+        public IActionResult Details(int id)
+        {
+            return RedirectToAction(nameof(Index), new { id });
         }
 
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            CreateOrderViewModel createOrder = new CreateOrderViewModel();
-            createOrder.OrderDetails.Add(new OrderItemViewModel());
-
-            // ToDo: Add real data
-            PopulateCreateOptions(createOrder);
-
+            var createOrder = await _orderService.BuildCreateViewModelAsync();
             return View(createOrder);
         }
 
         [HttpPost]
-        public IActionResult Create(
+        public async Task<IActionResult> Create(
             CreateOrderViewModel createOrder,
             OrderFormCommand? command,
             int? removeIndex)
         {
-            PopulateCreateOptions(createOrder);
+            await _orderService.PopulateCreateOptionsAsync(createOrder);
 
             if (command == OrderFormCommand.AddItem)
             {
-                AddItem(createOrder);
+                _orderFormService.AddItem(createOrder);
+                ModelState.Clear();
                 return View(createOrder);
             }
 
             if (command == OrderFormCommand.RemoveItem)
             {
-                RemoveItem(createOrder, removeIndex);
+                _orderFormService.RemoveItem(createOrder, removeIndex);
+                ModelState.Clear();
                 return View(createOrder);
             }
 
-            ValidateOrderForm(createOrder);
+            var validationErrors = new List<(string Key, string ErrorMessage)>();
+            _orderFormService.ValidateOrderForm(createOrder, validationErrors);
+            validationErrors.AddRange(await _orderService.ValidateCreateRelationshipsAsync(createOrder));
+
+            foreach (var error in validationErrors)
+            {
+                ModelState.AddModelError(error.Key, error.ErrorMessage);
+            }
 
             if (!ModelState.IsValid)
             {
@@ -53,138 +71,100 @@ namespace ShoppingSystem.Controllers
 
             if (command == OrderFormCommand.Calculate)
             {
-                CalculateTotals(createOrder);
+                _orderFormService.CalculateTotals(createOrder, validationErrors);
+
+                foreach (var error in validationErrors)
+                {
+                    ModelState.AddModelError(error.Key, error.ErrorMessage);
+                }
+
+                return View(createOrder);
             }
 
-            return View(createOrder);
+            if (command != OrderFormCommand.Create)
+            {
+                return View(createOrder);
+            }
+
+            var order = await _orderService.CreateOrderAsync(createOrder);
+
+            return RedirectToAction(nameof(Index), new { id = order.Id });
         }
 
-        private void AddItem(CreateOrderViewModel model)
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
         {
-            model.OrderDetails.Add(new OrderItemViewModel());
+            var model = await _orderService.BuildEditViewModelAsync(id);
+            if (model == null)
+            {
+                return NotFound();
+            }
 
-            ModelState.Clear();
+            ViewData["OrderId"] = id;
 
-            CalculateTotals(model);
+            return View(model);
         }
 
-        private void RemoveItem(CreateOrderViewModel model, int? removeIndex)
+        [HttpPost]
+        public async Task<IActionResult> Edit([FromRoute] int id, OrderFormViewModel model)
         {
-            if (removeIndex.HasValue &&
-                removeIndex.Value >= 0 &&
-                removeIndex.Value < model.OrderDetails.Count &&
-                model.OrderDetails.Count > 1)
+            var existing = await _orderService.BuildEditViewModelAsync(id);
+            if (existing == null)
             {
-                model.OrderDetails.RemoveAt(removeIndex.Value);
+                return NotFound();
             }
 
-            ModelState.Clear();
+            ViewData["OrderId"] = id;
+            await _orderService.PopulateEditOptionsAsync(model);
 
-            CalculateTotals(model);
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var validationErrors = await _orderService.ValidateEditRelationshipsAsync(model);
+            foreach (var error in validationErrors)
+            {
+                ModelState.AddModelError(error.Key, error.ErrorMessage);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var updated = await _orderService.UpdateOrderAsync(id, model);
+            if (!updated)
+            {
+                return NotFound();
+            }
+
+            return RedirectToAction(nameof(Index), new { id });
         }
 
-        private void CalculateTotals(CreateOrderViewModel model)
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
         {
-            model.OrderTotal = null;
+            var order = await _orderService.GetOrderForDeleteAsync(id);
 
-            for (var index = 0; index < model.OrderDetails.Count; index++)
+            if (order == null)
             {
-                var item = model.OrderDetails[index];
-
-                if (item.ProductId == 0)
-                {
-                    continue;
-                }
-
-                var product = model.Products.FirstOrDefault((p) => p.Id == item.ProductId);
-
-                item.Price = null;
-                item.LineTotal = null;
-
-                if (product == null)
-                {
-                    ModelState.AddModelError(
-                        $"OrderDetails[{index}].ProductId",
-                        "Selected product was not found.");
-
-                    continue;
-                }
-
-                item.Price = product.Price;
-
-                item.LineTotal = item.Price * item.Quantity;
+                return NotFound();
             }
 
-            if (ModelState.IsValid)
-            {
-                model.OrderTotal = model.OrderDetails.Sum((o) => o.LineTotal);
-            }
+            return View(order);
         }
 
-        private void PopulateCreateOptions(CreateOrderViewModel createOrder)
+        [HttpPost, ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            createOrder.Customers = new List<Customer>
+            var deleted = await _orderService.DeleteOrderAsync(id);
+            if (!deleted)
             {
-                new Customer
-                {
-                    Id = 1,
-                    FirstName = "Test",
-                    LastName = "Test",
-                    Address = "City",
-                    Discount = 5
-                }
-            };
-
-            createOrder.Supermarkets = new List<Supermarket>
-            {
-                new Supermarket
-                {
-                    Id = 1,
-                    Name = "Market",
-                    Address = "City"
-                }
-            };
-
-            createOrder.Products = new List<Product>
-            {
-                new Product
-                {
-                    Id = 1,
-                    Name = "Test",
-                    Price = 10
-                }
-            };
-        }
-
-        private void ValidateOrderForm(CreateOrderViewModel model)
-        {
-            if (model.OrderDetails.Count == 0)
-            {
-                ModelState.AddModelError(
-                    nameof(model.OrderDetails),
-                    "Order list can not be empty.");
+                return NotFound();
             }
 
-            var productIds = new HashSet<int>();
-
-            for (var i = 0; i < model.OrderDetails.Count; i++)
-            {
-                OrderItemViewModel item = model.OrderDetails[i];
-
-                if (item.Quantity <= 0)
-                {
-                    ModelState.AddModelError(
-                        $"OrderDetails[{i}].Quantity",
-                        "Quantity must be greater than zero.");
-                }
-
-                if (item.ProductId > 0 && !productIds.Add(item.ProductId))
-                {
-                    ModelState.AddModelError(
-                        $"OrderDetails[{i}].ProductId",
-                        "This product is already added.");
-                }
-            }
+            return RedirectToAction(nameof(Index));
         }
     }
 }

@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Data;
 using DB_Seeder.Concurrency;
+using DB_Seeder.Configuration;
 using DB_Seeder.Services;
 using DB_Seeder.Validation;
 
@@ -14,6 +15,8 @@ public static class SeederServiceCollectionExtensions
         string sqliteConnectionString,
         DatabaseSeederOptions? options = null)
     {
+        SqliteDatabaseDirectoryEnsurer.EnsureExists(sqliteConnectionString);
+
         services.AddDbContext<ShoppingDbContext>(db =>
                 db.UseSqlite(sqliteConnectionString, x => x.MigrationsAssembly(typeof(ShoppingDbContext).Assembly.GetName().Name)));
 

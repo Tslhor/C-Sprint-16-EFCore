@@ -31,8 +31,8 @@
                     <td>@order.Customer.FirstName @order.Customer.LastName</td>
                     <td>@order.Supermarket.Name</td>
                     <td class="text-nowrap text-end">
+                        <a asp-controller="Orders" asp-action="Index" asp-route-id="@order.Id">Select</a> |
                         <a asp-controller="Orders" asp-action="Edit" asp-route-id="@order.Id">Edit</a> |
-                        <a asp-controller="Orders" asp-action="Details" asp-route-id="@order.Id">Details</a> |
                         <a asp-controller="Orders" asp-action="Delete" asp-route-id="@order.Id"
                            class="text-danger">Delete</a>
                     </td>

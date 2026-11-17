@@ -1,14 +1,23 @@
 using DB_Seeder;
+using DB_Seeder.Configuration;
 using DB_Seeder.DependencyInjection;
+using ShoppingSystem.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var databasePath = Path.GetFullPath(Path.Combine(builder.Environment.ContentRootPath, "..", "DB", "shopping_system_local.db"));
+var connectionString = builder.Configuration.GetConnectionString("LocalSqlite")
+    ?? throw new InvalidOperationException("Connection string 'LocalSqlite' is not configured.");
+var resolvedConnectionString = SqliteConnectionStringResolver.Resolve(
+    connectionString,
+    builder.Environment.ContentRootPath);
 var seedDataPath = Path.GetFullPath(Path.Combine(builder.Environment.ContentRootPath, "..", "DB_Seeder", "SeedData"));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddShoppingSqliteSeeder($"Data Source={databasePath}");
+builder.Services.AddShoppingSqliteSeeder(resolvedConnectionString);
+builder.Services.AddScoped<IOrderFormService, OrderFormService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IOrderDetailsService, OrderDetailsService>();
 
 var app = builder.Build();
 
