@@ -49,8 +49,8 @@ Local work reviewed on 2026-11-15: Create Order calculations and Add/Remove cont
 Petro has created the MVC project. Petro can prepare the page layout while Ihor configures EF Core and the database.
 
 - [x] **Petro:** Create the ASP.NET Core MVC project.
-- [ ] **Ihor:** Add the required EF Core and SQL Server packages.
-- [ ] **Ihor:** Configure ShoppingContext registration and the connection string. Document local setup without committing private credentials.
+- [x] **Ihor:** Add the required EF Core and SQL Server packages.
+- [x] **Ihor:** Configure ShoppingContext registration and the connection string. Document local setup without committing private credentials.
 - [x] **Petro:** Merge the runnable project skeleton so both developers can build from the same starting point.
 - [x] **Petro:** Prepare the shared layout, home page, and navigation links for Products, Customers, Supermarkets, and Orders.
 
@@ -60,29 +60,29 @@ Petro has created the MVC project. Petro can prepare the page layout while Ihor 
 
 - [x] Create the Customer model with primary key, first name, last name, address, discount, validation attributes, and navigation to orders.
 - [x] Prepare CustomersController action skeletons and basic Create/Edit ModelState validation with temporary sample data.
-- [ ] Complete CustomersController CRUD: database queries, lookup by ID, persistence, and missing-record handling.
+- [x] Complete CustomersController CRUD: database queries, lookup by ID, persistence, and missing-record handling.
 - [x] Create Customer views for list, details, create, edit, and delete, including validation markup and a shared details partial.
 - [x] Prepare the Customer search form and sorting links in the UI.
-- [ ] Add ascending and descending sorting by last name and address.
-- [ ] Add substring filtering by first name or last name, and preserve the filter when changing sort order.
-- [ ] Check CRUD, each sorting direction, filtering, and empty results.
+- [x] Add ascending and descending sorting by last name and address.
+- [x] Add substring filtering by first name or last name, and preserve the filter when changing sort order.
+- [x] Check CRUD, each sorting direction, filtering, and empty results.
 
 ### Supermarkets
 
 - [x] Create the Supermarket model with primary key, name, address, validation attributes, and navigation to orders.
 - [x] Prepare SupermarketsController action skeletons and basic Create/Edit ModelState validation with temporary sample data.
-- [ ] Complete SupermarketsController CRUD: database queries, lookup by ID, persistence, and missing-record handling.
+- [x] Complete SupermarketsController CRUD: database queries, lookup by ID, persistence, and missing-record handling.
 - [x] Create Supermarket views for list, details, create, edit, and delete, including validation markup and a shared details partial.
 - [x] Add Previous/Next pagination controls to the index markup; controls are currently disabled.
-- [ ] Add pagination to the supermarket list, including page controls and handling for empty or invalid pages.
-- [ ] Check CRUD and navigation through the first, middle, and last pages.
+- [x] Add pagination to the supermarket list, including page controls and handling for empty or invalid pages.
+- [x] Check CRUD and navigation through the first, middle, and last pages.
 
 ### Products
 
 - [x] Create Product with primary key, name, decimal price, basic validation attributes, and navigation to order details.
 - [x] Create Product views for list, details, create, edit, and delete, showing product prices and validation markup, with a shared details partial.
 - [x] Prepare ProductsController action skeletons and basic Create/Edit ModelState validation with temporary sample data for UI preview.
-- [ ] Connect Product views to Ihor's controller actions and check submissions, validation, and navigation together.
+- [x] Connect Product views to Ihor's controller actions and check submissions, validation, and navigation together.
 
 ### Order models and views
 
@@ -91,7 +91,7 @@ Build these against the contracts agreed with Ihor. Final checks depend on his c
 - [x] Create Order with primary key, customer foreign key, supermarket foreign key, order date, reference navigations, and a collection of order details.
 - [x] Create OrderDetails with primary key, order foreign key, product foreign key, decimal quantity, and reference navigations.
 - [x] Add collection navigations to Customer, Supermarket, and Product.
-- [ ] Review navigation properties and SQL mappings with Ihor before generating migrations.
+- [x] Review navigation properties and SQL mappings with Ihor before generating migrations.
 - [x] Create OrdersIndexViewModel with an Orders collection and nullable SelectedOrder.
 - [x] Create the Orders index template showing order date, customer name, and supermarket name, with an empty-list message.
 - [x] Add the conditional selected-order panel with product names, quantities, prices, line totals, and total cost calculated from supplied data in the view.
@@ -100,12 +100,12 @@ Build these against the contracts agreed with Ihor. Final checks depend on his c
 - [x] Add basic form validation for positive customer/supermarket/product IDs and required order date, with validation message markup.
 - [x] Create the initial Create Order form with customer/supermarket/product dropdowns, date, and one bound quantity input.
 - [x] Implement GET Create with one empty position and sample dropdown data, a reusable PopulateCreateOptions method, and POST binding with ModelState validation and return of the submitted ViewModel.
-- [ ] Complete server validation of at least one position, positive quantity, and unique product IDs, with errors attached to the appropriate fields.
-- [ ] Merge the implemented Create form prices, line totals, and order total calculations; browser behavior reported working.
-- [ ] Merge the implemented Add/Remove controls and indexed row binding; browser behavior reported working.
+- [x] Complete server validation of at least one position, positive quantity, and unique product IDs, with errors attached to the appropriate fields.
+- [x] Merge the implemented Create form prices, line totals, and order total calculations; browser behavior reported working.
+- [x] Merge the implemented Add/Remove controls and indexed row binding; browser behavior reported working.
 - [ ] Add and validate the antiforgery token for the Create form POST.
 - [ ] Validate antiforgery tokens on Customer, Supermarket, and Product Create/Edit/Delete POST actions; the existing forms use Form Tag Helpers.
-- [ ] Verify selected values, quantity, date, validation errors, and dropdown choices survive a round trip in the browser.
+- [x] Verify selected values, quantity, date, validation errors, and dropdown choices survive a round trip in the browser.
 - [ ] Create views or controls to edit and delete orders and to add, edit, and remove order details.
 - [x] Bind readable customer, supermarket, and product names in the Create dropdowns, with IDs as submitted values.
 - [ ] Complete readable relationship selection and validation feedback in the remaining order and order-detail forms.
@@ -117,16 +117,16 @@ Build these against the contracts agreed with Ihor. Final checks depend on his c
 
 ### Database
 
-- [ ] Integrate all five of Petro's entity models into ShoppingContext with the corresponding DbSets.
-- [ ] Configure relationships, column mappings, constraints, and the agreed deletion behavior.
+- [x] Integrate all five of Petro's entity models into ShoppingContext with the corresponding DbSets.
+- [x] Configure relationships, column mappings, constraints, and the agreed deletion behavior.
 - [ ] After all models are integrated, create the initial migration and verify that it creates the expected SQL Server schema. Own subsequent migrations to avoid conflicting snapshots.
-- [ ] Implement SampleData.cs and invoke seeding through the service provider in Program.cs. Include customers, supermarkets, products, orders, and order details; obtain Customer and Supermarket sample values from Petro.
+- [x] Implement SampleData.cs and invoke seeding through the service provider in Program.cs. Include customers, supermarkets, products, orders, and order details; obtain Customer and Supermarket sample values from Petro.
 - [ ] Ensure repeated application startup does not duplicate seed records.
 
 ### Product backend
 
-- [ ] Implement ProductsController CRUD actions, server-side validation, and database persistence using Petro's model and view contracts.
-- [ ] Check the complete Product workflow through Petro's views together.
+- [x] Implement ProductsController CRUD actions, server-side validation, and database persistence using Petro's model and view contracts.
+- [x] Check the complete Product workflow through Petro's views together.
 
 ### Order backend
 
