@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Supermarket>
+@model ShoppingSystem.ViewModels.PagedListViewModel<Supermarket>
 
 @{
     ViewData["Title"] = "Supermarkets";
@@ -22,7 +22,7 @@
         </thead>
         <tbody>
 
-            @foreach (var supermarket in Model)
+            @foreach (var supermarket in Model.Items)
             {
                 <tr>
                     <td class="text-break">@supermarket.Name</td>
@@ -37,7 +37,7 @@
                 </tr>
             }
 
-            @if (!Model.Any())
+            @if (!Model.Items.Any())
             {
                 <tr>
                     <td colspan="3" class="text-center text-body-secondary py-4">
@@ -49,8 +49,4 @@
     </table>
 </div>
 
-<nav class="d-flex gap-2 mt-3" aria-label="Supermarket pages">
-    @* Enable these controls when the controller provides pagination data. *@
-    <button type="button" class="btn btn-outline-secondary" disabled>Previous</button>
-    <button type="button" class="btn btn-outline-secondary" disabled>Next</button>
-</nav>
+<partial name="_Pagination" model="Model" />
