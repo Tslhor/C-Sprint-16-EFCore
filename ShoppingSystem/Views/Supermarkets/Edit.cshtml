@@ -1,4 +1,4 @@
-﻿@model Supermarket
+@model ShoppingSystem.ViewModels.SupermarketFormViewModel
 
 @{
     ViewData["Title"] = "Edit Supermarket";
@@ -12,9 +12,9 @@
 
     <div class="row">
         <div class="col-md-8 col-lg-6">
-            <form asp-controller="Supermarkets" asp-action="Edit" method="post">
+            <form asp-controller="Supermarkets" asp-action="Edit" asp-route-id="@ViewData["SupermarketId"]"
+                  method="post">
                 <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-                <input asp-for="Id" type="hidden" />
 
                 <div class="mb-3">
                     <label asp-for="Name" class="form-label"></label>

@@ -1,110 +1,138 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Data;
 using Domain.Entities;
-using System.Diagnostics;
+using ShoppingSystem.ViewModels;
 
 namespace ShoppingSystem.Controllers
 {
     public class SupermarketsController : Controller
     {
-        private List<Supermarket> supermarkets = new List<Supermarket>();
+        private readonly ShoppingDbContext _context;
 
-        public SupermarketsController()
+        public SupermarketsController(ShoppingDbContext context)
         {
-            Supermarket supermarket = new Supermarket
-            {
-                Id = 1,
-                Name = "Test",
-                Address = "City",
-            };
-
-            supermarkets.Add(supermarket);
+            _context = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            var supermarkets = await _context.Supermarkets.AsNoTracking()
+                .OrderBy(supermarket => supermarket.Id).ToListAsync();
             return View(supermarkets);
         }
 
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
-            Supermarket supermarket = supermarkets[0];
+            var supermarket = await _context.Supermarkets.AsNoTracking()
+                .FirstOrDefaultAsync(supermarket => supermarket.Id == id);
 
             if (supermarket == null)
             {
                 return NotFound();
             }
-            // ToDo: Add logic to find a supermarket from DB
             return View(supermarket);
         }
 
         [HttpGet]
         public IActionResult Create()
         {
-            return View();
+            return View(new SupermarketFormViewModel());
         }
 
         [HttpPost]
-        public IActionResult Create(Supermarket supermarket)
+        public async Task<IActionResult> Create(SupermarketFormViewModel model)
         {
-            // Add logic to create a supermarket
-
             if (!ModelState.IsValid)
             {
-                return View(supermarket);
+                return View(model);
             }
+
+            var supermarket = new Supermarket
+            {
+                Name = model.Name,
+                Address = model.Address
+            };
+
+            _context.Supermarkets.Add(supermarket);
+            await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            Supermarket supermarket = supermarkets[0];
-
+            var supermarket = await _context.Supermarkets.FindAsync(id);
 
             if (supermarket == null)
             {
                 return NotFound();
             }
-            // ToDo: Add logic to find a supermarket from DB
-            return View(supermarket);
+            var model = new SupermarketFormViewModel
+            {
+                Name = supermarket.Name,
+                Address = supermarket.Address
+            };
+
+            ViewData["SupermarketId"] = id;
+            return View(model);
         }
 
         [HttpPost]
-        public IActionResult Edit(Supermarket supermarket)
+        public async Task<IActionResult> Edit([FromRoute] int id, SupermarketFormViewModel model)
         {
-            // Add logic to edit a supermarket
-
-            if (!ModelState.IsValid)
-            {
-                return View(supermarket);
-            }
-
+            var supermarket = await _context.Supermarkets.FindAsync(id);
             if (supermarket == null)
             {
                 return NotFound();
             }
+
+            ViewData["SupermarketId"] = id;
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            supermarket.Name = model.Name;
+            supermarket.Address = model.Address;
+            await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            Supermarket supermarket = supermarkets[0];
+            var supermarket = await _context.Supermarkets.AsNoTracking()
+                .FirstOrDefaultAsync(supermarket => supermarket.Id == id);
 
             if (supermarket == null)
             {
                 return NotFound();
             }
-            // ToDo: Add logic to find a supermarket from DB
             return View(supermarket);
         }
 
-        [HttpPost]
-        public IActionResult Delete(Supermarket supermarket)
+        [HttpPost, ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            // ToDo: Implement logic
+            var supermarket = await _context.Supermarkets.FindAsync(id);
+            if (supermarket == null)
+            {
+                return NotFound();
+            }
+
+            if (await _context.Orders.AnyAsync(order => order.SupermarketId == id))
+            {
+                ModelState.AddModelError(string.Empty, "Cannot delete a supermarket that has orders.");
+                return View("Delete", supermarket);
+            }
+
+            _context.Supermarkets.Remove(supermarket);
+            await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
     }
