@@ -1,110 +1,138 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Data;
 using Domain.Entities;
-using System.Diagnostics;
+using ShoppingSystem.ViewModels;
 
 namespace ShoppingSystem.Controllers
 {
     public class ProductsController : Controller
     {
-        private List<Product> products = new List<Product>();
+        private readonly ShoppingDbContext _context;
 
-        public ProductsController()
+        public ProductsController(ShoppingDbContext context)
         {
-            Product product = new Product
-            {
-                Id = 1,
-                Name = "Test",
-                Price = 10,
-            };
-
-            products.Add(product);
+            _context = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            var products = await _context.Products.AsNoTracking()
+                .OrderBy(product => product.Id).ToListAsync();
             return View(products);
         }
 
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
-            Product product = products[0];
+            var product = await _context.Products.AsNoTracking()
+                .FirstOrDefaultAsync(product => product.Id == id);
 
             if (product == null)
             {
                 return NotFound();
             }
-            // ToDo: Add logic to find a product from DB
             return View(product);
         }
 
         [HttpGet]
         public IActionResult Create()
         {
-            return View();
+            return View(new ProductFormViewModel());
         }
 
         [HttpPost]
-        public IActionResult Create(Product product)
+        public async Task<IActionResult> Create(ProductFormViewModel model)
         {
-            // Add logic to create a product
-
             if (!ModelState.IsValid)
             {
-                return View(product);
+                return View(model);
             }
+
+            var product = new Product
+            {
+                Name = model.Name,
+                Price = model.Price
+            };
+
+            _context.Products.Add(product);
+            await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            Product product = products[0];
-
+            var product = await _context.Products.FindAsync(id);
 
             if (product == null)
             {
                 return NotFound();
             }
-            // ToDo: Add logic to find a product from DB
-            return View(product);
+            var model = new ProductFormViewModel
+            {
+                Name = product.Name,
+                Price = product.Price
+            };
+
+            ViewData["ProductId"] = id;
+            return View(model);
         }
 
         [HttpPost]
-        public IActionResult Edit(Product product)
+        public async Task<IActionResult> Edit([FromRoute] int id, ProductFormViewModel model)
         {
-            // Add logic to edit a product
-
-            if (!ModelState.IsValid)
-            {
-                return View(product);
-            }
-
+            var product = await _context.Products.FindAsync(id);
             if (product == null)
             {
                 return NotFound();
             }
+
+            ViewData["ProductId"] = id;
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            product.Name = model.Name;
+            product.Price = model.Price;
+            await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            Product product = products[0];
+            var product = await _context.Products.AsNoTracking()
+                .FirstOrDefaultAsync(product => product.Id == id);
 
             if (product == null)
             {
                 return NotFound();
             }
-            // ToDo: Add logic to find a product from DB
             return View(product);
         }
 
-        [HttpPost]
-        public IActionResult Delete(Product product)
+        [HttpPost, ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            // ToDo: Implement logic
+            var product = await _context.Products.FindAsync(id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            if (await _context.OrderDetails.AnyAsync(detail => detail.ProductId == id))
+            {
+                ModelState.AddModelError(string.Empty, "Cannot delete a product that is used in orders.");
+                return View("Delete", product);
+            }
+
+            _context.Products.Remove(product);
+            await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
     }
