@@ -86,7 +86,18 @@ namespace ShoppingSystem.Controllers
                 return View(createOrder);
             }
 
-            var order = await _orderService.CreateOrderAsync(createOrder);
+            var order = await _orderService.CreateOrderAsync(createOrder, validationErrors);
+
+            if (order == null)
+            {
+                foreach (var error in validationErrors)
+                {
+                    ModelState.AddModelError(error.Key, error.ErrorMessage);
+                }
+
+                await _orderService.PopulateCreateOptionsAsync(createOrder);
+                return View(createOrder);
+            }
 
             return RedirectToAction(nameof(Index), new { id = order.Id });
         }

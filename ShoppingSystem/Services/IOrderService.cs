@@ -9,7 +9,9 @@ public interface IOrderService
     Task<CreateOrderViewModel> BuildCreateViewModelAsync();
     Task PopulateCreateOptionsAsync(CreateOrderViewModel model);
     Task<IReadOnlyList<(string Key, string ErrorMessage)>> ValidateCreateRelationshipsAsync(CreateOrderViewModel model);
-    Task<Order> CreateOrderAsync(CreateOrderViewModel model);
+    Task<Order?> CreateOrderAsync(
+        CreateOrderViewModel model,
+        IList<(string Key, string ErrorMessage)> validationErrors);
     Task<OrderFormViewModel?> BuildEditViewModelAsync(int id);
     Task PopulateEditOptionsAsync(OrderFormViewModel model);
     Task<IReadOnlyList<(string Key, string ErrorMessage)>> ValidateEditRelationshipsAsync(OrderFormViewModel model);
