@@ -5,7 +5,7 @@ using ShoppingSystem.ViewModels;
 
 namespace ShoppingSystem.Services;
 
-public sealed class OrderService(ShoppingDbContext context) : IOrderService
+public sealed class OrderService(ShoppingDbContext context, IOrderFormService orderFormService) : IOrderService
 {
     public async Task<OrdersIndexViewModel> BuildIndexViewModelAsync(int? selectedOrderId)
     {
@@ -104,8 +104,31 @@ public sealed class OrderService(ShoppingDbContext context) : IOrderService
         return errors;
     }
 
-    public async Task<Order> CreateOrderAsync(CreateOrderViewModel model)
+    public async Task<Order?> CreateOrderAsync(
+        CreateOrderViewModel model,
+        IList<(string Key, string ErrorMessage)> validationErrors)
     {
+        await using var transaction = await context.Database.BeginTransactionAsync();
+
+        orderFormService.ValidateOrderForm(model, validationErrors);
+
+        foreach (var error in await ValidateCreateRelationshipsAsync(model))
+        {
+            validationErrors.Add(error);
+        }
+
+        var productIds = model.OrderDetails.Select(item => item.ProductId).Distinct().ToList();
+        model.Products = await context.Products.AsNoTracking()
+            .Where(product => productIds.Contains(product.Id))
+            .ToListAsync();
+
+        orderFormService.CalculateTotals(model, validationErrors);
+
+        if (validationErrors.Count > 0)
+        {
+            return null;
+        }
+
         var order = new Order
         {
             CustomerId = model.CustomerId,
@@ -124,6 +147,7 @@ public sealed class OrderService(ShoppingDbContext context) : IOrderService
 
         context.Orders.Add(order);
         await context.SaveChangesAsync();
+        await transaction.CommitAsync();
 
         return order;
     }
