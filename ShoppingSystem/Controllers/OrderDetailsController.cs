@@ -109,6 +109,12 @@ namespace ShoppingSystem.Controllers
             var result = await _orderDetailsService.DeleteAsync(id);
             if (!result.Success)
             {
+                if (!string.IsNullOrWhiteSpace(result.ErrorMessage))
+                {
+                    TempData["OrderDetailsDeleteError"] = result.ErrorMessage;
+                    return RedirectToAction("Index", "Orders", new { id = result.OrderId });
+                }
+
                 return NotFound();
             }
 

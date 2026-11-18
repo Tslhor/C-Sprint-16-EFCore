@@ -1,4 +1,5 @@
 using ShoppingSystem.ViewModels;
+using ShoppingSystem.ViewModels.Validation;
 
 namespace ShoppingSystem.Services;
 
@@ -72,9 +73,9 @@ public sealed class OrderFormService : IOrderFormService
         {
             var item = model.OrderDetails[i];
 
-            if (item.Quantity <= 0)
+            if (item.Quantity < NumericValidationValues.ProductQuantityMinDecimalValue)
             {
-                validationErrors.Add(($"OrderDetails[{i}].Quantity", "Quantity must be greater than zero."));
+                validationErrors.Add(($"OrderDetails[{i}].Quantity", "Please select quantity"));
             }
 
             if (item.ProductId > 0 && !productIds.Add(item.ProductId))

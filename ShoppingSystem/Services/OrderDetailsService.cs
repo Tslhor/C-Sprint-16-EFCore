@@ -139,18 +139,27 @@ public sealed class OrderDetailsService(ShoppingDbContext context) : IOrderDetai
             .FirstOrDefaultAsync(item => item.Id == id);
     }
 
-    public async Task<(bool Success, int OrderId)> DeleteAsync(int id)
+    public async Task<(bool Success, int OrderId, string? ErrorMessage)> DeleteAsync(int id)
     {
         var detail = await context.OrderDetails.FindAsync(id);
         if (detail == null)
         {
-            return (false, 0);
+            return (false, 0, null);
         }
 
         var orderId = detail.OrderId;
+
+        var detailsCount = await context.OrderDetails
+            .CountAsync(item => item.OrderId == orderId);
+
+        if (detailsCount <= 1)
+        {
+            return (false, orderId, "Order must contain at least one product.");
+        }
+
         context.OrderDetails.Remove(detail);
         await context.SaveChangesAsync();
 
-        return (true, orderId);
+        return (true, orderId, null);
     }
 }

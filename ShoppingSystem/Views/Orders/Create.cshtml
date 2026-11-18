@@ -75,7 +75,7 @@
                         </td>
                         <td>
                             <label for="quantity-@index" class="visually-hidden">Quantity</label>
-                            <input id="quantity-@index" asp-for="OrderDetails[index].Quantity" type="number" step="any"
+                            <input id="quantity-@index" asp-for="OrderDetails[index].Quantity" type="number" min="0.001" step="0.001"
                                    class="form-control" required />
                             <span class="text-danger small field-validation-valid"
                                   asp-validation-for="OrderDetails[index].Quantity"></span>

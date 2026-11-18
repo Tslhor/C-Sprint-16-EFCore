@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using ShoppingSystem.ViewModels.Validation;
 
 namespace ShoppingSystem.ViewModels
 {
@@ -18,6 +19,8 @@ namespace ShoppingSystem.ViewModels
         [StringLength(50)]
         public string Address { get; set; } = string.Empty;
 
+        [Range(NumericValidationValues.DiscountMinValue, NumericValidationValues.DiscountMaxValue,
+            ErrorMessage = "Discount must be between 0 and 100.")]
         public int Discount { get; set; }
     }
 }

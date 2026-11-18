@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Domain.Entities;
+using ShoppingSystem.ViewModels.Validation;
 
 namespace ShoppingSystem.ViewModels
 {
@@ -9,6 +10,9 @@ namespace ShoppingSystem.ViewModels
         public int ProductId { get; set; }
 
         [Required(ErrorMessage = "Quantity is required.")]
+        [Range(typeof(decimal), NumericValidationValues.ProductQuantityMinValue, NumericValidationValues.ProductQuantityMaxValue,
+            ParseLimitsInInvariantCulture = true,
+            ErrorMessage = "Please select quantity")]
         public decimal Quantity { get; set; }
 
         public decimal? Price { get; set; }

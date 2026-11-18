@@ -13,5 +13,5 @@ public interface IOrderDetailsService
     Task<IReadOnlyList<(string Key, string ErrorMessage)>> ValidateEditAsync(int id, OrderDetailsFormViewModel model);
     Task<bool> UpdateAsync(int id, OrderDetailsFormViewModel model);
     Task<OrderDetails?> GetForDeleteAsync(int id);
-    Task<(bool Success, int OrderId)> DeleteAsync(int id);
+    Task<(bool Success, int OrderId, string? ErrorMessage)> DeleteAsync(int id);
 }

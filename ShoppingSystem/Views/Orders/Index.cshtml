@@ -8,6 +8,11 @@
 
 <h1 class="mb-3">Orders</h1>
 
+@if (TempData["OrderDetailsDeleteError"] is string deleteError && !string.IsNullOrWhiteSpace(deleteError))
+{
+    <div class="alert alert-warning">@deleteError</div>
+}
+
 <p class="mb-4">
     <a asp-controller="Orders" asp-action="Create" class="btn btn-primary">Create New</a>
 </p>
